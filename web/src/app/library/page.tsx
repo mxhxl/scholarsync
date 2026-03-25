@@ -8,6 +8,7 @@ import {
   Filter,
   Library as LibraryIcon,
   X,
+  ArrowLeft,
 } from "lucide-react";
 import {
   library as libraryApi,
@@ -115,86 +116,103 @@ export default function LibraryPage() {
       />
 
       <div className="px-8 py-6">
-        {/* Folders section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="section-label">Folders</h3>
-            <button
-              onClick={() => setShowNewFolder(true)}
-              className="btn-ghost text-xs flex items-center gap-1"
-            >
-              <Plus className="h-3 w-3" />
-              New Folder
-            </button>
-          </div>
-
-          {showNewFolder && (
-            <div className="flex items-center gap-2 mb-4">
-              <input
-                type="text"
-                value={newFolderName}
-                onChange={(e) => setNewFolderName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleCreateFolder();
-                  if (e.key === "Escape") setShowNewFolder(false);
-                }}
-                placeholder="Folder name"
-                className="input-field flex-1 py-2 text-sm"
-                autoFocus
-              />
-              <button onClick={handleCreateFolder} className="btn-primary text-sm py-2">
-                Create
-              </button>
-              <button
-                onClick={() => setShowNewFolder(false)}
-                className="p-2 text-slate-400 hover:text-slate-600"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        {/* Folder header when inside a folder */}
+        {activeFolder && (
+          <div className="mb-6">
             <button
               onClick={() => setActiveFolder(null)}
-              className={clsx(
-                "card p-4 text-left transition-all hover:shadow-md",
-                !activeFolder && "ring-2 ring-primary"
-              )}
+              className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-primary transition-colors mb-4"
             >
-              <FolderOpen className="h-8 w-8 text-primary mb-2" />
-              <p className="text-sm font-bold text-primary">All Papers</p>
-              <p className="text-xs text-slate-400 mt-1">{items.length} papers</p>
+              <ArrowLeft className="h-4 w-4" />
+              Back to all folders
             </button>
-
-            {folders.map((folder) => {
-              const count = folderCounts[folder.id] ?? 0;
-              return (
-                <button
-                  key={folder.id}
-                  onClick={() => setActiveFolder(folder.id)}
-                  className={clsx(
-                    "card p-4 text-left transition-all hover:shadow-md",
-                    activeFolder === folder.id && "ring-2 ring-primary"
-                  )}
-                >
-                  <FolderOpen className="h-8 w-8 text-accent-teal mb-2" />
-                  <p className="text-sm font-bold text-primary">{folder.name}</p>
-                  <p className="text-xs text-slate-400 mt-1">
-                    {count} paper{count !== 1 ? "s" : ""}
-                  </p>
-                </button>
-              );
-            })}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-accent-teal/10">
+                <FolderOpen className="h-6 w-6 text-accent-teal" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-primary">
+                  {folders.find((f) => f.id === activeFolder)?.name ?? "Folder"}
+                </h2>
+                <p className="text-sm text-slate-400">
+                  {filtered.length} paper{filtered.length !== 1 ? "s" : ""}
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Folders grid (only when not inside a folder) */}
+        {!activeFolder && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="section-label">Folders</h3>
+              <button
+                onClick={() => setShowNewFolder(true)}
+                className="btn-ghost text-xs flex items-center gap-1"
+              >
+                <Plus className="h-3 w-3" />
+                New Folder
+              </button>
+            </div>
+
+            {showNewFolder && (
+              <div className="flex items-center gap-2 mb-4">
+                <input
+                  type="text"
+                  value={newFolderName}
+                  onChange={(e) => setNewFolderName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleCreateFolder();
+                    if (e.key === "Escape") setShowNewFolder(false);
+                  }}
+                  placeholder="Folder name"
+                  className="input-field flex-1 py-2 text-sm"
+                  autoFocus
+                />
+                <button onClick={handleCreateFolder} className="btn-primary text-sm py-2">
+                  Create
+                </button>
+                <button
+                  onClick={() => setShowNewFolder(false)}
+                  className="p-2 text-slate-400 hover:text-slate-600"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {folders.map((folder) => {
+                const count = folderCounts[folder.id] ?? 0;
+                return (
+                  <button
+                    key={folder.id}
+                    onClick={() => setActiveFolder(folder.id)}
+                    className="card p-4 text-left transition-all hover:shadow-md hover:border-primary/20 group"
+                  >
+                    <FolderOpen className="h-8 w-8 text-accent-teal mb-2 group-hover:text-primary transition-colors" />
+                    <p className="text-sm font-bold text-primary">{folder.name}</p>
+                    <p className="text-xs text-slate-400 mt-1">
+                      {count} paper{count !== 1 ? "s" : ""}
+                    </p>
+                  </button>
+                );
+              })}
+
+              {folders.length === 0 && !showNewFolder && (
+                <div className="col-span-full text-center py-8 text-sm text-slate-400">
+                  No folders yet. Create one to organize your papers.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Papers list */}
         <div className="flex items-center justify-between mb-4">
           <h3 className="section-label">
-            {activeFolder
-              ? folders.find((f) => f.id === activeFolder)?.name ?? "Papers"
-              : "Recent Papers"}
+            {activeFolder ? "Papers" : "All Saved Papers"}
           </h3>
           <button className="p-2 text-slate-400 hover:text-primary transition-colors">
             <Filter className="h-4 w-4" />
