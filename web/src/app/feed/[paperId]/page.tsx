@@ -26,12 +26,15 @@ import {
 import {
   papers as papersApi,
   citations as citationsApi,
+  library as libraryApi,
   Paper,
   PaperSummary,
   PaperSuggestions,
   LiteratureReview,
   CitationNetwork,
+  Folder,
 } from "@/lib/api";
+import { X, FolderOpen, Plus } from "lucide-react";
 import clsx from "clsx";
 
 const AI_TABS = ["Summary", "Citations", "Suggestions", "Lit Review"] as const;
@@ -43,6 +46,7 @@ export default function PaperDetailsPage() {
   const [paper, setPaper] = useState<Paper | null>(null);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showSaveModal, setShowSaveModal] = useState(false);
 
   // AI analysis state
   const [aiTriggered, setAiTriggered] = useState(false);
@@ -148,7 +152,7 @@ export default function PaperDetailsPage() {
         </button>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setSaved(!saved)}
+            onClick={() => !saved && setShowSaveModal(true)}
             className={clsx(
               "rounded-lg p-2 transition-colors",
               saved
@@ -319,10 +323,13 @@ export default function PaperDetailsPage() {
       <div className="sticky bottom-0 border-t border-slate-100 bg-white/90 backdrop-blur-sm px-8 py-4">
         <div className="mx-auto max-w-4xl flex gap-3">
           <button
-            onClick={() => setSaved(!saved)}
-            className="btn-secondary flex-1 flex items-center justify-center gap-2"
+            onClick={() => !saved && setShowSaveModal(true)}
+            className={clsx(
+              "flex-1 flex items-center justify-center gap-2",
+              saved ? "btn-secondary opacity-60 cursor-default" : "btn-secondary"
+            )}
           >
-            <Bookmark className="h-4 w-4" />
+            <Bookmark className={clsx("h-4 w-4", saved && "fill-current")} />
             {saved ? "Saved" : "Save to Library"}
           </button>
           {!aiTriggered && (
@@ -348,6 +355,18 @@ export default function PaperDetailsPage() {
           )}
         </div>
       </div>
+
+      {/* Save to Library Modal */}
+      {showSaveModal && (
+        <SaveToLibraryModal
+          paperId={paperId}
+          onClose={() => setShowSaveModal(false)}
+          onSaved={() => {
+            setSaved(true);
+            setShowSaveModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -626,6 +645,170 @@ function LitReviewPanel({ litReview }: { litReview: LiteratureReview | null }) {
         </div>
       </div>
     </Section>
+  );
+}
+
+/* ── Save to Library Modal ─────────────────────────────────── */
+
+function SaveToLibraryModal({
+  paperId,
+  onClose,
+  onSaved,
+}: {
+  paperId: string;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [folders, setFolders] = useState<Folder[]>([]);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [newFolderName, setNewFolderName] = useState("");
+  const [showNewFolder, setShowNewFolder] = useState(false);
+  const [note, setNote] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [loadingFolders, setLoadingFolders] = useState(true);
+
+  useEffect(() => {
+    libraryApi.folders().then((f) => {
+      setFolders(f);
+      setLoadingFolders(false);
+    }).catch(() => setLoadingFolders(false));
+  }, []);
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      let folderId = selectedFolderId;
+
+      if (showNewFolder && newFolderName.trim()) {
+        const folder = await libraryApi.createFolder(newFolderName.trim());
+        folderId = folder.id;
+      }
+
+      await libraryApi.save({
+        paper_id: paperId,
+        folder_id: folderId ?? undefined,
+        personal_note: note.trim() || undefined,
+      });
+      onSaved();
+    } catch {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+          <h3 className="text-lg font-bold text-primary">Save to Library</h3>
+          <button onClick={onClose} className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="px-6 py-5 space-y-5">
+          {/* Folder selection */}
+          <div>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Choose Folder
+            </label>
+            <div className="mt-2 space-y-2 max-h-48 overflow-y-auto">
+              {/* No folder option */}
+              <button
+                onClick={() => { setSelectedFolderId(null); setShowNewFolder(false); }}
+                className={clsx(
+                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left transition-colors",
+                  selectedFolderId === null && !showNewFolder
+                    ? "bg-primary/10 text-primary font-semibold"
+                    : "text-slate-600 hover:bg-slate-50"
+                )}
+              >
+                <FolderOpen className="h-4 w-4 shrink-0" />
+                No folder (root)
+              </button>
+
+              {loadingFolders ? (
+                <p className="text-xs text-slate-400 px-3 py-2">Loading folders...</p>
+              ) : (
+                folders.map((folder) => (
+                  <button
+                    key={folder.id}
+                    onClick={() => { setSelectedFolderId(folder.id); setShowNewFolder(false); }}
+                    className={clsx(
+                      "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left transition-colors",
+                      selectedFolderId === folder.id
+                        ? "bg-primary/10 text-primary font-semibold"
+                        : "text-slate-600 hover:bg-slate-50"
+                    )}
+                  >
+                    <FolderOpen className="h-4 w-4 shrink-0" />
+                    {folder.name}
+                  </button>
+                ))
+              )}
+
+              {/* New folder option */}
+              <button
+                onClick={() => { setShowNewFolder(true); setSelectedFolderId(null); }}
+                className={clsx(
+                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left transition-colors",
+                  showNewFolder
+                    ? "bg-primary/10 text-primary font-semibold"
+                    : "text-slate-600 hover:bg-slate-50"
+                )}
+              >
+                <Plus className="h-4 w-4 shrink-0" />
+                Create new folder
+              </button>
+            </div>
+
+            {showNewFolder && (
+              <input
+                type="text"
+                value={newFolderName}
+                onChange={(e) => setNewFolderName(e.target.value)}
+                placeholder="Folder name"
+                autoFocus
+                className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+              />
+            )}
+          </div>
+
+          {/* Note */}
+          <div>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Personal Note (optional)
+            </label>
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Add a note about this paper..."
+              rows={2}
+              className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary resize-none"
+            />
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+          <button onClick={onClose} className="btn-secondary flex-1">
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving || (showNewFolder && !newFolderName.trim())}
+            className="btn-primary flex-1 flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {saving ? (
+              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Bookmark className="h-4 w-4" />
+            )}
+            {saving ? "Saving..." : "Save"}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
