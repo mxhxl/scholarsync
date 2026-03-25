@@ -1,0 +1,35 @@
+# ── Android ──────────────────────────────
+*.iml
+.gradle/
+build/
+local.properties
+*.apk
+*.aab
+*.jks
+*.keystore
+
+# ── IDE ──────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ── Python / Backend ────────────────────
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+backend/.env
+
+# ── Web / Node ──────────────────────────
+web/node_modules/
+web/.next/
+web/out/
+
+# ── OS ──────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Misc ────────────────────────────────
+.claude/
+.qodo/

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- White background -->
+  <rect width="512" height="512" fill="#ffffff"/>
+
+  <!-- Graduation cap board (flat diamond / mortarboard top) -->
+  <polygon points="256,72 424,148 256,224 88,148" fill="#0C2C55"/>
+
+  <!-- Cap body (cylindrical base below board) -->
+  <path d="M164,160 L164,214 Q256,264 348,214 L348,160 L256,210 Z" fill="#0C2C55"/>
+
+  <!-- Tassel string (from right corner of board) -->
+  <rect x="408" y="148" width="20" height="90" rx="6" fill="#0C2C55"/>
+
+  <!-- Tassel end -->
+  <rect x="394" y="234" width="48" height="34" rx="8" fill="#0C2C55"/>
+
+  <!-- Open book — left page -->
+  <path d="M68,298 L68,418 L242,384 L242,264 Z" fill="#0C2C55"/>
+
+  <!-- Open book — right page -->
+  <path d="M444,298 L444,418 L270,384 L270,264 Z" fill="#0C2C55"/>
+
+  <!-- Spine -->
+  <rect x="242" y="264" width="28" height="120" fill="#0C2C55"/>
+</svg>

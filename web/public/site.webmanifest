@@ -1,0 +1,16 @@
+{
+  "name": "ScholarSync",
+  "short_name": "ScholarSync",
+  "description": "AI-powered research paper discovery and summarization for PhD students and researchers.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "theme_color": "#0C2C55",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}

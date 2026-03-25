@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-800 antialiased;
+    font-family: "Inter", system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white font-semibold rounded-xl px-6 py-3 transition-all
+      hover:bg-primary-light active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply border-2 border-primary text-primary font-semibold rounded-xl px-6 py-3 transition-all
+      hover:bg-primary-50 active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply text-primary font-semibold rounded-xl px-4 py-2 transition-all
+      hover:bg-primary-50;
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
+      placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20
+      focus:border-primary transition-all;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl border border-slate-100 shadow-sm;
+  }
+
+  .chip {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold transition-colors;
+  }
+
+  .chip-active {
+    @apply bg-primary text-white;
+  }
+
+  .chip-inactive {
+    @apply bg-slate-100 text-slate-500 hover:bg-slate-200;
+  }
+
+  .section-label {
+    @apply text-xs font-bold tracking-wider text-primary uppercase;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-400;
+}

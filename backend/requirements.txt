@@ -1,0 +1,33 @@
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+sqlalchemy==2.0.25
+asyncpg==0.29.0
+psycopg2-binary==2.9.9
+pgvector==0.2.4
+alembic==1.13.1
+pydantic==2.5.3
+pydantic-settings==2.1.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+redis==5.0.1
+celery==5.3.6
+sentence-transformers==2.3.1
+# LLM: using local Ollama (no pip package needed — called via httpx)
+bertopic==0.16.0
+umap-learn==0.5.5
+# hdbscan: optional on Windows (fails to build without C++ tools). Uncomment if you have build tools, or use WSL.
+# hdbscan==0.8.33
+networkx==3.2
+arxiv==2.1.0
+biopython==1.83
+requests==2.31.0
+httpx==0.26.0
+tenacity==8.2.3
+firebase-admin==6.4.0
+sendgrid==6.11.0
+numpy==1.26.2
+scikit-learn==1.4.0
+pytest==7.4.4
+pytest-asyncio==0.23.3
+slowapi==0.1.9
+python-multipart==0.0.6
