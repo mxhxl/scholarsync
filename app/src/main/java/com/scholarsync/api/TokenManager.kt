@@ -52,6 +52,19 @@ object TokenManager {
             .build()
     }
 
+    /**
+     * Authenticated client with extended timeouts for AI/LLM calls
+     * (summary, literature review) that can take up to 180s on the backend.
+     */
+    val longRunningClient: OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(200, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor(AuthInterceptor())
+            .build()
+    }
+
     /** Unauthenticated client for login/register calls */
     val publicClient: OkHttpClient by lazy {
         OkHttpClient.Builder()

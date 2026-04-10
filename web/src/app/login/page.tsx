@@ -23,12 +23,7 @@ export default function LoginPage() {
       await login(email, password);
       router.push("/feed");
     } catch (err: any) {
-      const msg = err.message || "Login failed";
-      setError(
-        msg.includes("Internal Server") || msg.includes("fetch")
-          ? "Backend server is not reachable. Make sure the FastAPI server is running on port 8000."
-          : msg
-      );
+      setError(err?.message || "Login failed");
     } finally {
       setSubmitting(false);
     }

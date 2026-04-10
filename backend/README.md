@@ -32,7 +32,7 @@ cp .env.example .env
 alembic upgrade head
 
 # 6. Start FastAPI
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8035
 
 # 7. Start Celery worker (separate terminal)
 celery -A app.core.celery_app worker --loglevel=info
@@ -40,7 +40,7 @@ celery -A app.core.celery_app worker --loglevel=info
 # 8. Start Celery beat scheduler (separate terminal)
 celery -A app.core.celery_app beat --loglevel=info
 
-# API docs: http://localhost:8000/docs
+# API docs: http://180.235.121.253:8035/docs
 
 # 9. Run tests
 pip install aiosqlite

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8035";
 
 async function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
@@ -36,9 +36,11 @@ async function proxy(req: NextRequest) {
       status: resp.status,
       headers: respHeaders,
     });
-  } catch {
+  } catch (err) {
     return NextResponse.json(
-      { detail: "Backend unavailable — is the FastAPI server running on port 8000?" },
+      {
+        detail: `Backend unavailable at ${BACKEND_URL} — ${err instanceof Error ? err.message : String(err)}`,
+      },
       { status: 502 }
     );
   }

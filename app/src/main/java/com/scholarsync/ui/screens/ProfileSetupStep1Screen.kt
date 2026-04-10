@@ -33,6 +33,14 @@ import com.scholarsync.data.SessionManager
 import com.scholarsync.ui.components.*
 import com.scholarsync.ui.theme.*
 
+/** Returns error message or null if email is valid. */
+private fun validateEmail(email: String): String? {
+    val trimmed = email.trim()
+    if (trimmed.isEmpty()) return "Email is required."
+    if (!android.util.Patterns.EMAIL_ADDRESS.matcher(trimmed).matches()) return "Please enter a valid email address."
+    return null
+}
+
 /** Returns error message or null if password is strong enough. Matches backend rules. */
 private fun validatePasswordStrength(password: String): String? {
     if (password.length < 8) return "Password must be at least 8 characters long."
@@ -55,6 +63,7 @@ fun ProfileSetupStep1Screen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
     var confirmPasswordError by remember { mutableStateOf<String?>(null) }
     var registerError by remember { mutableStateOf<String?>(null) }
@@ -171,11 +180,20 @@ fun ProfileSetupStep1Screen(
             Spacer(modifier = Modifier.height(12.dp))
             ScholarTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = { email = it; emailError = null },
                 placeholder = "e.g. alex@university.edu",
                 leadingIcon = Icons.Outlined.Email,
                 keyboardType = KeyboardType.Email
             )
+            if (emailError != null) {
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = emailError!!,
+                    fontSize = 12.sp,
+                    color = Error,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -360,12 +378,13 @@ fun ProfileSetupStep1Screen(
             PrimaryButton(
                 text = if (isLoading) "Creating account..." else "Continue",
                 onClick = {
+                    emailError = validateEmail(email)
                     passwordError = validatePasswordStrength(password)
                     confirmPasswordError = when {
                         confirmPassword != password -> "Passwords do not match."
                         else -> null
                     }
-                    if (passwordError == null && confirmPasswordError == null) {
+                    if (emailError == null && passwordError == null && confirmPasswordError == null) {
                         registerError = null
                         isLoading = true
                         val baseUrl = sessionManager.getApiBaseUrl()

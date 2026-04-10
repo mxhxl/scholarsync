@@ -10,7 +10,7 @@ const AdminSidebar = dynamic(() => import("./AdminSidebar"), {
   loading: () => <div className="w-64 shrink-0" />,
 });
 
-const PUBLIC_ROUTES = ["/login", "/register", "/profile-setup"];
+const PUBLIC_ROUTES = ["/login", "/register", "/profile-setup", "/privacy-policy"];
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();

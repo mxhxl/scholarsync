@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,7 +37,8 @@ import com.scholarsync.ui.theme.*
 fun WelcomeScreen(
     onGetStarted: () -> Unit,
     onSignIn: () -> Unit,
-    userDisplayName: String? = null
+    userDisplayName: String? = null,
+    onServerUrl: (() -> Unit)? = null
 ) {
     val configuration = LocalConfiguration.current
     val isSmallScreen = configuration.screenWidthDp < 360
@@ -64,6 +66,24 @@ fun WelcomeScreen(
                     )
                 )
         )
+
+        // Server URL settings icon (top-right)
+        if (onServerUrl != null) {
+            IconButton(
+                onClick = onServerUrl,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .windowInsetsPadding(WindowInsets.statusBars)
+                    .padding(top = 8.dp, end = 12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Server settings",
+                    tint = Gray400,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+        }
 
         Column(
             modifier = Modifier

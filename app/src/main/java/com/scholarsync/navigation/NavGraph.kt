@@ -73,7 +73,8 @@ fun NavGraph(
             WelcomeScreen(
                 onGetStarted = { navController.navigate(NavRoutes.ProfileSetupStep1.route) },
                 onSignIn = { navController.navigate(NavRoutes.Login.route) },
-                userDisplayName = displayName
+                userDisplayName = displayName,
+                onServerUrl = { navController.navigate(NavRoutes.ServerUrl.route) }
             )
         }
 

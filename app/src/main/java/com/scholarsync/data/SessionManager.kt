@@ -170,6 +170,6 @@ class SessionManager(context: Context) {
         private const val KEY_LAST_ALERT_CHECK = "last_alert_check_time"
         private const val MAX_LOGIN_ACTIVITY = 50
         /** Default backend URL. Use 10.0.2.2 for emulator, LAN IP for physical device. */
-        const val DEFAULT_API_BASE_URL = "http://192.168.31.15:8000"
+        const val DEFAULT_API_BASE_URL = "http://180.235.121.253:8035"
     }
 }
